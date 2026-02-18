@@ -37,19 +37,24 @@ export function EditServiceLogDialog({ open, log, onClose, onSave }: EditService
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Edit service log</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
+      <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
+        Edit service log
+      </DialogTitle>
+      <DialogContent sx={{ pt: 0, pb: 2 }}>
         <ServiceLogForm
           key={log?.id}
           formId="edit-service-log-form"
+          formTitle={null}
           defaultValues={defaultValues}
           onSubmit={handleSubmit}
         />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" type="submit" form="edit-service-log-form">
+      <DialogActions sx={{ px: 3, pb: 2, pt: 0, gap: 1 }}>
+        <Button onClick={onClose} sx={{ borderRadius: 2 }}>
+          Cancel
+        </Button>
+        <Button variant="contained" type="submit" form="edit-service-log-form" sx={{ borderRadius: 2 }}>
           Save
         </Button>
       </DialogActions>

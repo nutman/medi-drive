@@ -57,16 +57,35 @@ export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTablePro
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" gutterBottom>
-        Service logs
-      </Typography>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.3, mb: 0.25 }}>
+          Service logs
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4 }}>
+          Search and filter by date range or type. Edit or delete from the table.
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-end',
+          gap: 2,
+          mb: 2,
+          p: 2,
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
         <TextField
           size="small"
-          label="Search (provider, order, car, description)"
+          label="Search"
+          placeholder="Provider, order, car, description…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          sx={{ minWidth: 280 }}
+          sx={{ minWidth: 280, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
         />
         <TextField
           size="small"
@@ -75,7 +94,7 @@ export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTablePro
           value={dateFrom}
           onChange={(e) => setDateFrom(e.target.value)}
           InputLabelProps={{ shrink: true }}
-          sx={{ width: 160 }}
+          sx={{ width: 160, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
         />
         <TextField
           size="small"
@@ -84,9 +103,9 @@ export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTablePro
           value={dateTo}
           onChange={(e) => setDateTo(e.target.value)}
           InputLabelProps={{ shrink: true }}
-          sx={{ width: 160 }}
+          sx={{ width: 160, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
         />
-        <FormControl size="small" sx={{ minWidth: 140 }}>
+        <FormControl size="small" sx={{ minWidth: 140, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
           <InputLabel>Type</InputLabel>
           <Select
             value={typeFilter}
@@ -102,27 +121,27 @@ export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTablePro
           </Select>
         </FormControl>
       </Box>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}>
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Provider</TableCell>
-              <TableCell>Order</TableCell>
-              <TableCell>Car</TableCell>
-              <TableCell align="right">Odometer</TableCell>
-              <TableCell align="right">Engine h</TableCell>
-              <TableCell>Start</TableCell>
-              <TableCell>End</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Provider</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Order</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Car</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Odometer</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Engine h</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Start</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>End</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Type</TableCell>
+              <TableCell sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Description</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, bgcolor: 'action.hover', fontSize: '0.8125rem' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredLogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} align="center" sx={{ py: 3 }}>
-                  No service logs match the filters.
+                <TableCell colSpan={10} align="center" sx={{ py: 4, color: 'text.secondary', fontSize: '0.9375rem' }}>
+                  No service logs match the filters. Create one with the form above.
                 </TableCell>
               </TableRow>
             ) : (
@@ -136,7 +155,7 @@ export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTablePro
                   <TableCell>{log.startDate}</TableCell>
                   <TableCell>{log.endDate}</TableCell>
                   <TableCell>{log.type}</TableCell>
-                  <TableCell sx={{ maxWidth: 200 }}>{log.serviceDescription}</TableCell>
+                  <TableCell sx={{ maxWidth: 200, fontSize: '0.875rem', lineHeight: 1.4 }}>{log.serviceDescription}</TableCell>
                   <TableCell align="right">
                     <IconButton size="small" onClick={() => onEdit(log)} aria-label="Edit">
                       <EditIcon fontSize="small" />

@@ -9,10 +9,34 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import type { ServiceLogFormValues } from '../types/serviceLog';
 import { SERVICE_LOG_TYPES } from '../types/serviceLog';
 import { serviceLogSchema } from '../schemas/serviceLogSchema';
 import { todayISO, tomorrowISO, addOneDay } from '../utils/dateDefaults';
+
+const fieldSx = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 2,
+    bgcolor: 'background.paper',
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.light' },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderWidth: 2 },
+  },
+} as const;
+
+const sectionTitleSx = {
+  display: 'block',
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase' as const,
+  color: 'text.secondary',
+  mb: 1.5,
+  mt: 0,
+  lineHeight: 1.4,
+} as const;
 
 export interface ServiceLogFormProps {
   defaultValues?: Partial<ServiceLogFormValues>;
@@ -21,6 +45,8 @@ export interface ServiceLogFormProps {
   submitLabel?: string;
   disabled?: boolean;
   formId?: string;
+  /** Section title shown above the form (e.g. "New service log"). Omit in dialogs. */
+  formTitle?: string | null;
 }
 
 const defaultFormValues: ServiceLogFormValues = {
@@ -42,6 +68,7 @@ export function ServiceLogForm({
   submitLabel = 'Submit',
   disabled = false,
   formId,
+  formTitle = 'New service log',
 }: ServiceLogFormProps) {
   const mergedDefaults = { ...defaultFormValues, ...propDefaults };
 
@@ -86,7 +113,29 @@ export function ServiceLogForm({
   }, [watch, onValuesChange]);
 
   return (
-    <Box component="form" id={formId} onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+    <Paper
+      component="form"
+      id={formId}
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      elevation={0}
+      sx={{
+        border: '1px solid',
+        borderColor: 'divider',
+        p: 3,
+        borderRadius: 2,
+        bgcolor: 'background.paper',
+      }}
+    >
+      {formTitle != null && formTitle !== '' && (
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary', lineHeight: 1.3 }}>
+          {formTitle}
+        </Typography>
+      )}
+
+      <Typography component="span" sx={sectionTitleSx}>
+        Identifiers
+      </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>
           <Controller
@@ -101,6 +150,7 @@ export function ServiceLogForm({
                 error={Boolean(errors.providerId)}
                 helperText={errors.providerId?.message}
                 disabled={disabled}
+                sx={fieldSx}
               />
             )}
           />
@@ -118,6 +168,7 @@ export function ServiceLogForm({
                 error={Boolean(errors.serviceOrder)}
                 helperText={errors.serviceOrder?.message}
                 disabled={disabled}
+                sx={fieldSx}
               />
             )}
           />
@@ -135,11 +186,18 @@ export function ServiceLogForm({
                 error={Boolean(errors.carId)}
                 helperText={errors.carId?.message}
                 disabled={disabled}
+                sx={fieldSx}
               />
             )}
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 3 }}>
+      </Grid>
+
+      <Typography component="span" sx={{ ...sectionTitleSx, mt: 3 }}>
+        Vehicle & metrics
+      </Typography>
+      <Grid container spacing={2} sx={{ mt: 0 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Controller
             name="odometer"
             control={control}
@@ -153,12 +211,13 @@ export function ServiceLogForm({
                 error={Boolean(errors.odometer)}
                 helperText={errors.odometer?.message}
                 disabled={disabled}
+                sx={fieldSx}
                 onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
               />
             )}
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 3 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Controller
             name="engineHours"
             control={control}
@@ -172,11 +231,18 @@ export function ServiceLogForm({
                 error={Boolean(errors.engineHours)}
                 helperText={errors.engineHours?.message}
                 disabled={disabled}
+                sx={fieldSx}
                 onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
               />
             )}
           />
         </Grid>
+      </Grid>
+
+      <Typography component="span" sx={{ ...sectionTitleSx, mt: 3 }}>
+        Schedule
+      </Typography>
+      <Grid container spacing={2} sx={{ mt: 0 }}>
         <Grid size={{ xs: 12, sm: 4 }}>
           <Controller
             name="startDate"
@@ -192,6 +258,7 @@ export function ServiceLogForm({
                 error={Boolean(errors.startDate)}
                 helperText={errors.startDate?.message}
                 disabled={disabled}
+                sx={fieldSx}
               />
             )}
           />
@@ -211,6 +278,7 @@ export function ServiceLogForm({
                 error={Boolean(errors.endDate)}
                 helperText={errors.endDate?.message}
                 disabled={disabled}
+                sx={fieldSx}
               />
             )}
           />
@@ -220,7 +288,19 @@ export function ServiceLogForm({
             name="type"
             control={control}
             render={({ field }) => (
-              <FormControl fullWidth required error={Boolean(errors.type)} disabled={disabled}>
+              <FormControl
+                fullWidth
+                required
+                error={Boolean(errors.type)}
+                disabled={disabled}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.light' },
+                  },
+                }}
+              >
                 <InputLabel>Service type</InputLabel>
                 <Select {...field} label="Service type">
                   {SERVICE_LOG_TYPES.map((t) => (
@@ -238,6 +318,12 @@ export function ServiceLogForm({
             )}
           />
         </Grid>
+      </Grid>
+
+      <Typography component="span" sx={{ ...sectionTitleSx, mt: 3 }}>
+        Service details
+      </Typography>
+      <Grid container spacing={2} sx={{ mt: 0 }}>
         <Grid size={12}>
           <Controller
             name="serviceDescription"
@@ -249,23 +335,28 @@ export function ServiceLogForm({
                 fullWidth
                 required
                 multiline
-                rows={3}
+                rows={4}
                 error={Boolean(errors.serviceDescription)}
                 helperText={errors.serviceDescription?.message}
                 disabled={disabled}
+                sx={fieldSx}
               />
             )}
           />
         </Grid>
-        {submitLabel && (
-          <Grid size={12}>
-            <Button type="submit" variant="contained" disabled={disabled}>
+      </Grid>
+
+      {submitLabel && (
+        <>
+          <Divider sx={{ my: 3 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button type="submit" variant="contained" size="large" disabled={disabled} sx={{ px: 3 }}>
               {submitLabel}
             </Button>
-          </Grid>
-        )}
-      </Grid>
-    </Box>
+          </Box>
+        </>
+      )}
+    </Paper>
   );
 }
 

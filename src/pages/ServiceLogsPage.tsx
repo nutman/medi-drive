@@ -186,25 +186,48 @@ export default function ServiceLogsPage() {
   );
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Service logs
-      </Typography>
+    <Box
+      sx={{
+        width: '100%',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        py: { xs: 2, sm: 3 },
+        px: { xs: 2, sm: 3 },
+        boxSizing: 'border-box',
+      }}
+    >
+      <Box sx={{ width: '100%', maxWidth: 960, marginLeft: 'auto', marginRight: 'auto' }}>
+      <Box component="header" sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.25, mb: 0.5 }}>
+          Service logs
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ fontSize: '0.9375rem', lineHeight: 1.5 }}>
+          Create and manage service logs. Drafts are saved automatically.
+        </Typography>
+      </Box>
 
-      <Box sx={{ mt: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minHeight: 24 }}>
+      <Box sx={{ mb: 3 }}>
+        <Box
+          sx={{
+            mb: 1.5,
+            minHeight: 24,
+            display: 'flex',
+            alignItems: 'center',
+            pl: 0.5,
+          }}
+        >
           {saving && (
-            <Typography variant="body2" color="text.secondary">
-              Saving...
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              Saving…
             </Typography>
           )}
           {!saving && lastSavedAt && (
-            <>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <CheckCircleOutlineIcon color="success" fontSize="small" />
-              <Typography variant="body2" color="success.main">
+              <Typography variant="body2" color="success.main" fontWeight={500}>
                 Draft saved
               </Typography>
-            </>
+            </Box>
           )}
         </Box>
         <ServiceLogForm
@@ -250,6 +273,7 @@ export default function ServiceLogsPage() {
           </Alert>
         </Snackbar>
       )}
+      </Box>
     </Box>
   );
 }
