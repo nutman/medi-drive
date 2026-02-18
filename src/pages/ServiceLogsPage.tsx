@@ -3,6 +3,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
@@ -20,22 +26,26 @@ import { EditServiceLogDialog } from '../components/EditServiceLogDialog';
 import type { ServiceLogFormValues } from '../types/serviceLog';
 import type { ServiceLog } from '../types/serviceLog';
 import type { ServiceLogDraft } from '../types/serviceLog';
-import { todayISO, tomorrowISO } from '../utils/dateDefaults';
+import { getDefaultFormValues } from '../constants/formDefaults';
 
 function useDebounce<T>(value: T, delay: number, onDebounced: (v: T) => void) {
-  const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirst = useRef(true);
+  const onDebouncedRef = useRef(onDebounced);
+  onDebouncedRef.current = onDebounced;
 
   useEffect(() => {
     if (isFirst.current) {
       isFirst.current = false;
       return;
     }
-    ref.current = setTimeout(() => onDebounced(value), delay);
+    timeoutRef.current = setTimeout(() => {
+      onDebouncedRef.current(value);
+    }, delay);
     return () => {
-      if (ref.current) clearTimeout(ref.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [value, delay, onDebounced]);
+  }, [value, delay]);
 }
 
 export default function ServiceLogsPage() {
@@ -43,18 +53,9 @@ export default function ServiceLogsPage() {
   const { items: drafts, currentDraftId, saving, lastSavedAt } = useAppSelector((s) => s.drafts);
   const serviceLogs = useAppSelector((s) => s.serviceLogs);
 
-  const [formValues, setFormValues] = useState<ServiceLogFormValues>({
-    providerId: '',
-    serviceOrder: '',
-    carId: '',
-    odometer: 0,
-    engineHours: 0,
-    startDate: todayISO(),
-    endDate: tomorrowISO(),
-    type: 'planned',
-    serviceDescription: '',
-  });
+  const [formValues, setFormValues] = useState<ServiceLogFormValues>(getDefaultFormValues);
   const [editLog, setEditLog] = useState<ServiceLog | null>(null);
+  const [deleteLog, setDeleteLog] = useState<ServiceLog | null>(null);
   const [formResetKey, setFormResetKey] = useState(0);
   const [snackbar, setSnackbar] = useState<{ message: string; severity: 'success' | 'error' | 'info' } | null>(null);
 
@@ -104,17 +105,7 @@ export default function ServiceLogsPage() {
     (id: string) => {
       dispatch(removeDraft(id));
       if (currentDraftId === id) {
-        setFormValues({
-          providerId: '',
-          serviceOrder: '',
-          carId: '',
-          odometer: 0,
-          engineHours: 0,
-          startDate: todayISO(),
-          endDate: tomorrowISO(),
-          type: 'planned',
-          serviceDescription: '',
-        });
+        setFormValues(getDefaultFormValues());
         dispatch(setCurrentDraftId(null));
       }
     },
@@ -123,17 +114,7 @@ export default function ServiceLogsPage() {
 
   const handleClearAllDrafts = useCallback(() => {
     dispatch(clearAllDrafts());
-    setFormValues({
-      providerId: '',
-      serviceOrder: '',
-      carId: '',
-      odometer: 0,
-      engineHours: 0,
-      startDate: todayISO(),
-      endDate: tomorrowISO(),
-      type: 'planned',
-      serviceDescription: '',
-    });
+    setFormValues(getDefaultFormValues());
   }, [dispatch]);
 
   const handleCreateServiceLog = useCallback(() => {
@@ -150,17 +131,7 @@ export default function ServiceLogsPage() {
         serviceDescription: formValues.serviceDescription,
       })
     );
-    setFormValues({
-      providerId: '',
-      serviceOrder: '',
-      carId: '',
-      odometer: 0,
-      engineHours: 0,
-      startDate: todayISO(),
-      endDate: tomorrowISO(),
-      type: 'planned',
-      serviceDescription: '',
-    });
+    setFormValues(getDefaultFormValues());
     dispatch(setCurrentDraftId(null));
     setFormResetKey((k) => k + 1);
     setSnackbar({ message: 'Service log created.', severity: 'success' });
@@ -175,15 +146,21 @@ export default function ServiceLogsPage() {
     [dispatch]
   );
 
-  const handleDeleteLog = useCallback(
-    (id: string) => {
-      if (window.confirm('Delete this service log?')) {
-        dispatch(removeServiceLog(id));
-        setSnackbar({ message: 'Service log deleted.', severity: 'info' });
-      }
-    },
-    [dispatch]
-  );
+  const handleDeleteLogRequest = useCallback((log: ServiceLog) => {
+    setDeleteLog(log);
+  }, []);
+
+  const handleConfirmDeleteLog = useCallback(() => {
+    if (deleteLog) {
+      dispatch(removeServiceLog(deleteLog.id));
+      setSnackbar({ message: 'Service log deleted.', severity: 'info' });
+      setDeleteLog(null);
+    }
+  }, [deleteLog, dispatch]);
+
+  const handleCancelDeleteLog = useCallback(() => {
+    setDeleteLog(null);
+  }, []);
 
   return (
     <Box
@@ -251,8 +228,37 @@ export default function ServiceLogsPage() {
       <ServiceLogsTable
         logs={serviceLogs}
         onEdit={setEditLog}
-        onDelete={handleDeleteLog}
+        onDelete={handleDeleteLogRequest}
       />
+
+      <Dialog
+        open={Boolean(deleteLog)}
+        onClose={handleCancelDeleteLog}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+        PaperProps={{ sx: { borderRadius: 2 } }}
+      >
+        <DialogTitle id="delete-dialog-title">Delete service log?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            This action cannot be undone. The service log will be permanently removed.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, pt: 0, gap: 1 }}>
+          <Button onClick={handleCancelDeleteLog} sx={{ borderRadius: 2 }}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleConfirmDeleteLog}
+            sx={{ borderRadius: 2 }}
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <EditServiceLogDialog
         open={Boolean(editLog)}

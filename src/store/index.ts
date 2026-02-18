@@ -25,6 +25,10 @@ export const store = configureStore({
     getDefaultMiddleware({ serializableCheck: { ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'] } }),
 });
 
-export const persistor = persistStore(store);
+export const persistor = persistStore(store, {
+  onError: (err) => {
+    console.error('redux-persist failed:', err);
+  },
+});
 export type { RootState };
 export type AppDispatch = typeof store.dispatch;

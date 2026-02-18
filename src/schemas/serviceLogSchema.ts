@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { SERVICE_LOG_TYPES } from '../types/serviceLog';
+import { SERVICE_LOG_TYPES } from '../constants/serviceLogConstants';
 
 export const serviceLogSchema = yup.object({
   providerId: yup.string().required('Provider ID is required'),

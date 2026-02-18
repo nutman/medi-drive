@@ -15,7 +15,8 @@ import Divider from '@mui/material/Divider';
 import type { ServiceLogFormValues } from '../types/serviceLog';
 import { SERVICE_LOG_TYPES } from '../types/serviceLog';
 import { serviceLogSchema } from '../schemas/serviceLogSchema';
-import { todayISO, tomorrowISO, addOneDay } from '../utils/dateDefaults';
+import { getDefaultFormValues } from '../constants/formDefaults';
+import { addOneDay } from '../utils/dateDefaults';
 
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
@@ -49,18 +50,6 @@ export interface ServiceLogFormProps {
   formTitle?: string | null;
 }
 
-const defaultFormValues: ServiceLogFormValues = {
-  providerId: '',
-  serviceOrder: '',
-  carId: '',
-  odometer: 0,
-  engineHours: 0,
-  startDate: todayISO(),
-  endDate: tomorrowISO(),
-  type: 'planned',
-  serviceDescription: '',
-};
-
 export function ServiceLogForm({
   defaultValues: propDefaults,
   onSubmit,
@@ -70,7 +59,7 @@ export function ServiceLogForm({
   formId,
   formTitle = 'New service log',
 }: ServiceLogFormProps) {
-  const mergedDefaults = { ...defaultFormValues, ...propDefaults };
+  const mergedDefaults = { ...getDefaultFormValues(), ...propDefaults };
 
   const {
     control,
@@ -96,11 +85,12 @@ export function ServiceLogForm({
     }
   }, [startDate, setValue]);
 
+  const propDefaultsKey = propDefaults ? JSON.stringify(propDefaults) : '';
   useEffect(() => {
     if (!propDefaults) return;
     reset(mergedDefaults);
     prevStartRef.current = mergedDefaults.startDate;
-  }, [propDefaults?.startDate, propDefaults?.endDate]);
+  }, [propDefaultsKey]); // eslint-disable-line react-hooks/exhaustive-deps -- reset when parent defaults identity change
 
   useEffect(() => {
     if (!onValuesChange) return;

@@ -43,7 +43,7 @@ export function EditServiceLogDialog({ open, log, onClose, onSave }: EditService
       </DialogTitle>
       <DialogContent sx={{ pt: 0, pb: 2 }}>
         <ServiceLogForm
-          key={log?.id}
+          key={open ? log?.id ?? 'new' : 'closed'}
           formId="edit-service-log-form"
           formTitle={null}
           defaultValues={defaultValues}

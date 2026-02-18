@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# Medi-Drive
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React application for managing service logs. Create drafts, auto-save form data, and view, search, filter, edit, and delete service logs. All data persists in the browser (localStorage) across page reloads.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React** + **TypeScript**
+- **Redux Toolkit** + **redux-persist** (state and persistence)
+- **MUI** (Material UI) + **Emotion** (CSS-in-JS)
+- **React Hook Form** + **Yup** (forms and validation)
+- **Vite** (build and dev server)
+- **React Router**
 
-## React Compiler
+## What it does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Service log form**: Provider, service order, car, odometer, engine hours, dates, type (planned / unplanned / emergency), description.
+- **Drafts**: Create drafts, auto-save as you type, resume later. Drafts and logs survive reload.
+- **Service logs table**: List all logs with search (provider, order, car, description) and filters (date range, type). Edit or delete from the table.
 
-## Expanding the ESLint configuration
+## How to run
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Node.js** (v18 or newer recommended)
+- **npm** (or yarn / pnpm)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Install dependencies
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development (with hot reload)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Then open **http://localhost:5173/** in your browser. The app will redirect to `/service-logs`.
+
+### Build for production
+
+```bash
+npm run build
+```
+
+Output is in the `dist/` folder.
+
+### Preview production build locally
+
+```bash
+npm run preview
+```
+
+### Lint
+
+```bash
+npm run lint
+```
+
+## Project structure (main parts)
+
+- `src/pages/ServiceLogsPage.tsx` – main page (form, drafts, table)
+- `src/components/` – `ServiceLogForm`, `DraftList`, `ServiceLogsTable`, `EditServiceLogDialog`
+- `src/store/` – Redux store and slices (`draftsSlice`, `serviceLogsSlice`), persisted with redux-persist
+- `src/types/`, `src/schemas/` – TypeScript types and Yup validation
+- `src/theme.ts` – MUI theme
+
+## Routes
+
+- `/` – redirects to `/service-logs`
+- `/service-logs` – service logs management page

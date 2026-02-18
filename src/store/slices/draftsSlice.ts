@@ -1,9 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { ServiceLogDraft, ServiceLogFormValues } from '../../types/serviceLog';
-
-function generateId(): string {
-  return crypto.randomUUID?.() ?? `draft-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
+import { generateId } from '../../utils/id';
 
 interface DraftsState {
   items: ServiceLogDraft[];
@@ -36,7 +33,7 @@ const draftsSlice = createSlice({
         const idx = state.items.findIndex((d) => d.id === id);
         state.items[idx] = { ...state.items[idx], ...values, id, updatedAt: now };
       } else {
-        const newId = id ?? generateId();
+        const newId = id ?? generateId('draft');
         state.items.push({ ...values, id: newId, updatedAt: now });
         state.currentDraftId = newId;
       }

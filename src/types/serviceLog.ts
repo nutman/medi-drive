@@ -1,18 +1,12 @@
-export type ServiceLogType = 'planned' | 'unplanned' | 'emergency';
+import type { ServiceLogSchemaType } from '../schemas/serviceLogSchema';
+import type { ServiceLogType } from '../constants/serviceLogConstants';
+import { SERVICE_LOG_TYPES } from '../constants/serviceLogConstants';
 
-export const SERVICE_LOG_TYPES: ServiceLogType[] = ['planned', 'unplanned', 'emergency'];
+export type { ServiceLogType };
+export { SERVICE_LOG_TYPES };
 
-export interface ServiceLogFormValues {
-  providerId: string;
-  serviceOrder: string;
-  carId: string;
-  odometer: number;
-  engineHours: number;
-  startDate: string;
-  endDate: string;
-  type: ServiceLogType;
-  serviceDescription: string;
-}
+/** Form values type; aligned with Yup schema (ServiceLogSchemaType). */
+export type ServiceLogFormValues = ServiceLogSchemaType;
 
 export interface ServiceLogDraft extends ServiceLogFormValues {
   id: string;

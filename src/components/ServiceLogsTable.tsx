@@ -22,7 +22,7 @@ import { SERVICE_LOG_TYPES, type ServiceLogType } from '../types/serviceLog';
 export interface ServiceLogsTableProps {
   logs: ServiceLog[];
   onEdit: (log: ServiceLog) => void;
-  onDelete: (id: string) => void;
+  onDelete: (log: ServiceLog) => void;
 }
 
 export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTableProps) {
@@ -160,7 +160,7 @@ export function ServiceLogsTable({ logs, onEdit, onDelete }: ServiceLogsTablePro
                     <IconButton size="small" onClick={() => onEdit(log)} aria-label="Edit">
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" color="error" onClick={() => onDelete(log.id)} aria-label="Delete">
+                    <IconButton size="small" color="error" onClick={() => onDelete(log)} aria-label="Delete">
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </TableCell>

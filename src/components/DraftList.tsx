@@ -89,7 +89,9 @@ export function DraftList({
               }}
               secondaryAction={
                 <ListItemSecondaryAction>
-                  <CheckCircleIcon color="success" fontSize="small" sx={{ mr: 1 }} />
+                  {currentDraftId === draft.id && (
+                    <CheckCircleIcon color="success" fontSize="small" sx={{ mr: 1 }} />
+                  )}
                   <IconButton
                     edge="end"
                     size="small"

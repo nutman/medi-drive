@@ -1,9 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { ServiceLog, ServiceLogFormValues } from '../../types/serviceLog';
-
-function generateId(): string {
-  return crypto.randomUUID?.() ?? `log-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
+import { generateId } from '../../utils/id';
 
 const serviceLogsSlice = createSlice({
   name: 'serviceLogs',
@@ -12,7 +9,7 @@ const serviceLogsSlice = createSlice({
     addServiceLog(state, action: PayloadAction<ServiceLogFormValues>) {
       state.push({
         ...action.payload,
-        id: generateId(),
+        id: generateId('log'),
         createdAt: Date.now(),
       });
     },
